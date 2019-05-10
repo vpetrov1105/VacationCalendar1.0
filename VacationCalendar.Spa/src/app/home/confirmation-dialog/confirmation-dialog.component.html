@@ -1,0 +1,13 @@
+<div class="row justify-content-md-center"><h3 md-dialog-title> {{dialogTitlle}} </h3></div>
+<div class="row" md-dialog-content>{{confirmMessage}}</div>
+<div class="row action justify-content-md-center" md-dialog-actions>
+    <button md-button type="button" class="btn btn-primary confirmation-btn" (click)="dialogRef.close(true)"> 
+        <i class="fa fa-check fa-lg" data-toggle="tooltip" i18n-title="Button tooltip@@buttonConfirm" title="Confirm"></i>
+    </button>
+    <button md-button type="button" 
+            *ngIf="showCancelButton"
+            class="btn btn-primary confirmation-btn" 
+            (click)="dialogRef.close(false)">
+            <i class="fa fa-times fa-lg" data-toggle="tooltip" i18n-title="Button tooltip@@buttonClose" title="Close"></i>
+    </button>
+</div>

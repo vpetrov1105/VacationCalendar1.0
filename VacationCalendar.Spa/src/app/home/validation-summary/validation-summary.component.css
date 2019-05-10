@@ -1,0 +1,24 @@
+.validation-summary{
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    padding-left: 15px;
+    padding-right: 15px;
+    }
+
+.success{
+    background-color: #E7FFCE;
+    border:1px solid #5CBA30;
+}
+
+.error{
+    background-color: #FFCECE;
+    border:1px solid #FF3F3F;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}

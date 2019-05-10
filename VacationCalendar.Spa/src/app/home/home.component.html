@@ -1,0 +1,61 @@
+<div class="container">
+  <div class="row justify-content-md-center month-change">
+    <div class="col-md-1 col-4 text-center">
+        <button  class="btn btn-primary btn-primary" (click)="changeMonth('previousMonth')" data-toggle="tooltip" data-placement="top" title="Previous"><i class="fa fa-angle-left"></i></button>
+    </div>
+    <div class="col-md-1 col-4 text-center align-middle">
+        <div>{{currentMonthData.monthName}}</div> 
+        <div>{{currentMonthData.year}}</div>
+    </div>
+    <div class="col-md-1 col-4 text-center">
+        <button  class="btn btn-primary btn-primary" (click)="changeMonth('nextMonth')" data-toggle="tooltip" data-placement="top" title="Next"><i class="fa fa-angle-right"></i></button>
+    </div>
+  </div>
+</div>
+
+<div class="row justify-content-md-center">
+    <app-validation-summary *ngIf="response" [response]="response"></app-validation-summary>
+</div>
+
+<div class="table-responsive">
+  <table class="table table-striped">
+      <thead>
+        <tr class="text-center"> 
+          <td>
+            <div *ngIf="currentUser.role != role.anonymus ">
+              <button  class="btn btn-primary btn-primary" (click)="changeMode(true)" data-toggle="tooltip" data-placement="top" title="Edit" *ngIf="!currentMonthData.isInEditMode"><i class="fa fa-edit"></i></button>
+              <button  class="btn btn-primary btn-primary" (click)="changeMode(false)" data-toggle="tooltip" data-placement="top" title="Home" *ngIf="currentMonthData.isInEditMode"><i class="fa fa-home"></i></button>
+            </div>
+          </td>
+          <td *ngFor="let dayName of dayNames" class="center">
+              <div>{{dayName.day}} </div>
+              <div>({{dayName.dayName}})</div>
+          </td>
+        </tr>
+      </thead>
+      <tbody>
+          <ng-container *ngFor="let user of currentMonthData.users; let i = index"> 
+              <tr *ngIf="(currentUser.role == role.admin || !currentMonthData.isInEditMode || (currentUser.role == role.user && currentUser.id == user.id && currentMonthData.isInEditMode))">
+                <td class="text-center">
+                    <div>{{user.firstName}}</div>  
+                    <div>{{user.lastName}}</div>
+                    <div *ngIf="(currentUser.role == role.admin || (currentUser.role == role.user && currentUser.id == user.id))">
+                      <button  class="btn btn-primary btn-primary btn-sm" (click)="insertVacation(user)" data-toggle="tooltip" data-placement="top" title="Insert/Edit" *ngIf="currentMonthData.isInEditMode"><i class="fa fa-plus-square fa-xs"></i></button>
+                    </div>
+                </td>
+                <td *ngFor="let vacation of user.vacationData" class="text-center vacation-type-name" [class.on-vacation]="vacation.isOnVacation">
+                  {{getVacationTypeName(vacation.vacationTypeID)}}
+                  <div *ngIf="(currentUser.role == role.admin || (currentUser.role == role.user && currentUser.id == user.id))">
+                    <button  class="btn btn-primary btn-primary btn-sm delete-button" (click)="deleteVacation(vacation, i)" data-toggle="tooltip" data-placement="top" title="Delete" *ngIf="currentMonthData.isInEditMode && vacation.id > 0"><i class="fa fa-trash fa-xs"></i></button>
+                  </div>
+                </td>
+              </tr>
+              <tr *ngIf="currentMonthData.isInEditMode && user.isDetailShown && (currentUser.role == role.admin || (currentUser.role == role.user && currentUser.id == user.id))">
+                <td [attr.colspan]="user.vacationData.length + 1">
+                  <app-vacation-details [user]="user" [staticLists]="staticLists" (responseVacation)="responseVacation($event)"></app-vacation-details>
+                </td>
+              </tr>
+          </ng-container>
+      </tbody>
+  </table>
+</div>

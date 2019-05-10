@@ -1,0 +1,9 @@
+<div class="row no-gutters">
+    <ul>
+        <li *ngFor="let message of response.responseMessage">
+            <div class="col-md-auto validation-summary" [ngClass]="response.success  ? 'success' : 'error'">
+                {{message}}
+            </div>
+        </li>
+    </ul>
+</div>

@@ -1,0 +1,14 @@
+C:\VacationCalendar\VacationCalendar.Api\bin\Debug\netcoreapp2.1\VacationCalendar.Api.deps.json
+C:\VacationCalendar\VacationCalendar.Api\bin\Debug\netcoreapp2.1\VacationCalendar.Api.runtimeconfig.json
+C:\VacationCalendar\VacationCalendar.Api\bin\Debug\netcoreapp2.1\VacationCalendar.Api.runtimeconfig.dev.json
+C:\VacationCalendar\VacationCalendar.Api\bin\Debug\netcoreapp2.1\VacationCalendar.Api.dll
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.csprojAssemblyReference.cache
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.csproj.CoreCompileInputs.cache
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.RazorAssemblyInfo.cache
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.RazorAssemblyInfo.cs
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.AssemblyInfoInputs.cache
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.AssemblyInfo.cs
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.RazorTargetAssemblyInfo.cache
+C:\VacationCalendar\VacationCalendar.Api\bin\Debug\netcoreapp2.1\VacationCalendar.Api.pdb
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.dll
+C:\VacationCalendar\VacationCalendar.Api\obj\Debug\netcoreapp2.1\VacationCalendar.Api.pdb

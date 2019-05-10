@@ -1,0 +1,14 @@
+<nav class="navbar navbar-expand navbar-dark bg-dark" *ngIf="currentUser">
+    <div class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2">
+        <span class="navbar-text mr-auto">
+            Hi, {{currentUser.firstName}}
+          </span>
+    </div>
+    <div class="navbar-collapse collapse w-100 order-2 dual-collapse2">
+        <div class="navbar-nav ml-auto">
+            <a class="nav-item nav-link" (click)="logout()"><button type="button" class="btn btn-light">Logout</button></a>
+        </div>
+    </div>
+</nav>
+
+<router-outlet></router-outlet>

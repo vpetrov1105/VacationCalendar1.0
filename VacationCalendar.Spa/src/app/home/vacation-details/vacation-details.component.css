@@ -1,0 +1,15 @@
+.vacation-form{
+    width: 100%;
+    border: 1px solid #dddddd;
+    padding: 5px;
+}
+.md-datepicker-input-container {
+    width: 100px;
+}
+.confirmation-row{
+    flex-direction: row-reverse;
+}
+.form-control-feedback{
+    color:red;
+    font-style: italic;
+}

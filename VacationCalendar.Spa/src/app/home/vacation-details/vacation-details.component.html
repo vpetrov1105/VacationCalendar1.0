@@ -1,0 +1,58 @@
+<div class="container">
+    <div class="row">
+    <form class="vacation-form" novalidate [formGroup]="vacationDataGroup" #vacationDataForm="ngForm" (ngSubmit)="saveData()">
+        <fieldset>
+        
+          <legend>Vacation insert/edit</legend>
+          <div class="row">
+            
+            <div class="col-md-4">
+              <mat-form-field>
+                  <input matInput [min]="minDateFrom" [max]="maxDateFrom"  placeholder="From" (dateInput)="fromEvent('input', $event)" (dateChange)="fromEvent('change', $event)" [matDatepicker]="picker1" [formControl]="dateFromCntrl">
+                  <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                  <mat-datepicker #picker1></mat-datepicker>
+                </mat-form-field>
+              <div class="form-control-feedback" *ngIf="dateFromCntrl.hasError('required') && (dateFromCntrl.dirty || vacationDataForm.submitted)">
+                  <span>Field is required!</span>
+              </div>
+            </div>
+      
+            <div class="col-md-4">
+              <mat-form-field>
+                  <input matInput [min]="minDateTo" [max]="maxDateTo" placeholder="To" (dateInput)="toEvent('input', $event)" (dateChange)="toEvent('change', $event)" [matDatepicker]="picker2" [formControl]="dateToCntrl">
+                  <mat-datepicker-toggle matSuffix [for]="picker2"></mat-datepicker-toggle>
+                  <mat-datepicker #picker2></mat-datepicker>
+                </mat-form-field>
+                <div class="form-control-feedback" *ngIf="dateToCntrl.hasError('required') && (dateToCntrl.dirty || vacationDataForm.submitted)">
+                    <span>Field is required!</span>
+                </div>
+            </div>
+  
+            <div class="col-md-4">
+                <mat-form-field>
+                    <mat-label>Vacation Type</mat-label>
+                    <mat-select [formControl]="vacationTypeCntrl">
+                      <mat-option *ngFor="let vacationType of staticLists.vacationTypes;" [value]="vacationType.id">
+                        {{vacationType.vacationTypeName}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                <div class="form-control-feedback" *ngIf="vacationTypeCntrl.hasError('required') && (vacationTypeCntrl.dirty || vacationDataForm.submitted)">
+                    <span>Field is required!</span>
+                </div>
+            </div>
+          </div>
+          <div class="row justify-content-end">
+              <div class="col-md-1">
+                <button class="btn btn-primary" id="save" name="save" type="submit">
+                    <i class="fa fa-save fa-lg" data-toggle="tooltip" title="Save"></i>
+                </button>
+              </div>
+          </div>
+        </fieldset>
+      </form>
+    </div>
+</div>
+
+
+
