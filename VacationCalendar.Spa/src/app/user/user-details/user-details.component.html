@@ -1,0 +1,77 @@
+<div class="container">
+  <div class="row">
+    <form class="user-form" novalidate [formGroup]="userDataGroup" #userDataForm="ngForm" (ngSubmit)="saveData()">
+        <div class="row">
+          <div class="col-md-4">
+            <mat-form-field appearance="legacy">
+              <input matInput placeholder="First Name" [formControl]="firstNameCntrl" [value]="user.firstName">
+            </mat-form-field>
+            <div class="form-control-feedback" *ngIf="firstNameCntrl.hasError('required') && (firstNameCntrl.dirty || userDataForm.submitted)">
+                <span>Field is required!</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+              <mat-form-field appearance="legacy">
+                <input matInput placeholder="Last Name" [formControl]="lastNameCntrl" [value]="user.lastName">
+              </mat-form-field>
+              <div class="form-control-feedback" *ngIf="lastNameCntrl.hasError('required') && (lastNameCntrl.dirty || userDataForm.submitted)">
+                  <span>Field is required!</span>
+              </div>
+          </div>
+          
+          <div class="col-md-4">
+              <mat-form-field>
+                <input matInput  placeholder="BirthDate" [matDatepicker]="picker1" [formControl]="dateBirthCntrl" [value]="user.birthDate">
+                <mat-datepicker-toggle matSuffix [for]="picker1"></mat-datepicker-toggle>
+                <mat-datepicker #picker1></mat-datepicker>
+              </mat-form-field>
+            <div class="form-control-feedback" *ngIf="dateBirthCntrl.hasError('required') && (dateBirthCntrl.dirty || userDataForm.submitted)">
+                <span>Field is required!</span>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+            <div class="col-md-4">
+              <mat-form-field appearance="legacy">
+                <input matInput placeholder="Username" [formControl]="userNameCntrl" [value]="user.userName">
+              </mat-form-field>
+              <div class="form-control-feedback" *ngIf="userNameCntrl.hasError('required') && (userNameCntrl.dirty || userDataForm.submitted)">
+                  <span>Field is required!</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <mat-form-field>
+                  <mat-label>Role</mat-label>
+                  <mat-select [formControl]="roleCntrl" [value]="user.role">
+                    <mat-option value="ADMIN">ADMIN</mat-option>
+                    <mat-option value="USER">USER</mat-option>
+                    <mat-option value="ANONYMOUS">ANONYMUS</mat-option>
+                  </mat-select>
+                </mat-form-field>
+              <div class="form-control-feedback" *ngIf="roleCntrl.hasError('required') && (roleCntrl.dirty || userDataForm.submitted)">
+                  <span>Field is required!</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+                <mat-form-field>
+                    <mat-label>Office County Code</mat-label>
+                    <mat-select [formControl]="officeCodeCntrl" [value]="user.officeCountryCode">
+                      <mat-option value="HR">HR</mat-option>
+                      <mat-option value="US">US</mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                <div class="form-control-feedback" *ngIf="officeCodeCntrl.hasError('required') && (officeCodeCntrl.dirty || userDataForm.submitted)">
+                    <span>Field is required!</span>
+                </div>
+            </div>
+        </div> 
+        <div class="row justify-content-end">
+          <div class="col-md-1">
+            <button class="btn btn-primary" id="save" name="save" type="submit">
+                <i class="fa fa-save fa-lg" data-toggle="tooltip" title="Save"></i>
+            </button>
+          </div>
+        </div> 
+      </form>
+    </div>
+</div>

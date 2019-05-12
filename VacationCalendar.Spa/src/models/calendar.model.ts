@@ -7,6 +7,9 @@ import { Observable } from 'rxjs';
 import { ICalendar } from 'src/interfaces/calendar.interface';
 import { Injectable } from '@angular/core';
 import { User } from './user.model';
+import { IInitialData } from 'src/interfaces/initial-data.interface';
+import { InitialData } from './initial-data.model';
+import { HomeFilter } from './home-filter.model';
 
 @Injectable()
 export class Calendar {
@@ -20,25 +23,36 @@ export class Calendar {
     constructor(private calendarService: CalendarService) { 
     }
 
-    public loadCalendarData(period?: ISelectedPeriod) : Observable<Calendar>{
+    public getInitialData(period?: ISelectedPeriod) : Observable<InitialData>{
 
         if(period === undefined || period === null) {
             period = UtiliyFunctions.currentMonthYear;
         }
         
-         return this.calendarService.getCalendarData(period)
+         return this.calendarService.getInitialData(period)
             .pipe(map(data => {
-                let parsedData = this.parseServerData(data)
-                return parsedData;
+                let initialData = new InitialData()
+                initialData.staticLists = data.staticLists
+                initialData.calendar = this.parseServerData(data.calendar)
+                return initialData;
             }));
     }
 
-    public changeMonth(direction: string): Observable<Calendar>  {
+    public getCalendarData(direction: string): Observable<Calendar>  {
         let period = this.generatePeriod(direction);
-        return this.loadCalendarData(period)
+        return this.calendarService.getCalendarData(period)
         .pipe(map(data => {
-            return data
+            let parsedData = this.parseServerData(data)
+            return parsedData
         }));
+    }
+
+    public getFilteredCalendar(filter: HomeFilter): Observable<Calendar>  {
+        return this.calendarService.getFilteredCalendar(filter)
+            .pipe(map(data => {
+                let parsedData = this.parseServerData(data)
+                return parsedData
+            }));
     }
 
     private parseServerData(data: ICalendar): Calendar {

@@ -5,7 +5,6 @@ import { ResponseMessage } from 'src/models/response-message.model';
 import { Observable, throwError } from 'rxjs';
 import { UtiliyFunctions } from 'src/infrastructure/utility-functions';
 import { IVacationData } from 'src/interfaces/vacation-data.interface';
-import { VacationData } from 'src/models/vacation-data.model';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +14,7 @@ export class VacationDataService {
   constructor(private http: HttpClient) { }
 
   deleteVacation(vacation: IVacationData): Observable<ResponseMessage> {
-    return this.http.post<ResponseMessage>('/api/vacation/DeleteVacation', vacation)
+    return this.http.post<ResponseMessage>('/api/calendar/DeleteVacation', vacation)
         .pipe(map(
             data => {
               return UtiliyFunctions.handleResponse(data)
@@ -27,7 +26,7 @@ export class VacationDataService {
   }
 
   updateVacation(vacation: IVacationData[]): Observable<ResponseMessage> {
-    return this.http.post<ResponseMessage>('/api/vacation/updateVacation', vacation)
+    return this.http.post<ResponseMessage>('/api/calendar/updateVacation', vacation)
         .pipe(map(
             data => {
                 return UtiliyFunctions.handleResponse(data)

@@ -33,11 +33,17 @@ namespace VacationCalendar.Api.Migrations
                     b.Property<string>("LastName")
                         .IsRequired();
 
+                    b.Property<string>("OfficeCountryCode");
+
                     b.Property<string>("Password")
                         .IsRequired();
 
                     b.Property<string>("Role")
                         .IsRequired();
+
+                    b.Property<byte[]>("RowVersion")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
 
                     b.Property<string>("UserName")
                         .IsRequired();

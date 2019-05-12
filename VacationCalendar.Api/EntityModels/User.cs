@@ -21,6 +21,9 @@ namespace VacationCalendar.Api.EntityModels
         public string Password { get; set; }
         [Required]
         public string Role { get; set; }
+        public string OfficeCountryCode { get; set; }
+        [Timestamp]
+        public byte[] RowVersion { get; set; }
 
         [ForeignKey("UserID")]
         public virtual ICollection<VacationData> VacationData { get; set; }

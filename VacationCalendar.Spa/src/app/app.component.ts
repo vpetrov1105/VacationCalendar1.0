@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { AuthenticationService } from 'src/services/authentication.service';
 import { ILoginUser } from 'src/interfaces/login-user.interface';
 import { Role } from 'src/models/role.model';
+import { Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
 
 @Component({
   selector: 'app-root',
@@ -16,9 +17,10 @@ export class AppComponent {
 
     constructor(
         private router: Router,
-        private authenticationService: AuthenticationService
+        private authenticationService: AuthenticationService, private spinnerService: Ng4LoadingSpinnerService
     ) {
         this.authenticationService.currentUser.subscribe(x => this.currentUser = x);
+        spinnerService.show();
     }
 
     logout() {

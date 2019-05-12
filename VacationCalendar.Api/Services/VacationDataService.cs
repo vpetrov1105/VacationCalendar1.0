@@ -6,17 +6,12 @@ using System.Threading.Tasks;
 using VacationCalendar.Api.EntityModels;
 using VacationCalendar.Api.Helpers;
 using VacationCalendar.Api.Infrastructure;
+using VacationCalendar.Api.Services.Interfaces;
 using VacationCalendar.Api.Validators;
 using VacationCalendar.Api.ViewModels;
 
 namespace VacationCalendar.Api.Services
 {
-    public interface IVacationDataService
-    {
-        ResponseViewModel<List<VacationDataViewModel>> DeleteVacation(VacationDataViewModel vacation, LoginViewModel loggedUser);
-        ResponseViewModel<List<VacationDataViewModel>> UpdateVacation(List<VacationDataViewModel> vacations, LoginViewModel loggedUser);
-        List<UserViewModel> GetUsersData(int year, int month);
-    }
     public class VacationDataService : IVacationDataService
     {
         private readonly VacationCalendarContext _context;
@@ -28,182 +23,219 @@ namespace VacationCalendar.Api.Services
             _validator = validator;
         }
 
-        public ResponseViewModel<List<VacationDataViewModel>> DeleteVacation(VacationDataViewModel vacation, LoginViewModel loggedUser)
+        public Task<ResponseViewModel<List<VacationDataViewModel>>> DeleteVacationAsync (VacationDataViewModel vacation, LoginViewModel loggedUser)
         {
-            var response = new ResponseViewModel<List<VacationDataViewModel>>();
-            
-            response = _validator.IsValidForDelete(vacation, loggedUser);
-            if (!response.Success)
+            return Task.Factory.StartNew(() =>
             {
-                return response;
-            }
+                var response = new ResponseViewModel<List<VacationDataViewModel>>();
 
-            try
-            {
-                var vacationToUpdate = _context.VacationData
-                            .Where(c => c.ID == vacation.Id)
-                            .SingleOrDefault();
-
-                if (vacationToUpdate == null)
+                response = _validator.IsValidForDelete(vacation, loggedUser);
+                if (!response.Success)
                 {
-                    throw new CustomException(string.Format("Meanwhile the vacation was deleted by another user!"));
+                    return response;
                 }
 
-                _context.VacationData.Remove(_context.VacationData.Find(vacation.Id));
+                try
+                {
+                    var vacationToDelete = _context.VacationData
+                                .SingleOrDefault(c => c.ID == vacation.Id);
 
-                _context.SaveChanges();
+                    if (vacationToDelete == null)
+                    {
+                        throw new Exception(string.Format("Meanwhile the vacation was deleted by another user!"));
+                    }
 
-                response.Success = true;
-            }
+                    _context.VacationData.Remove(_context.VacationData.Find(vacation.Id));
 
-            catch (Exception e)
-            {
-                response.Success = false;
-                response.ResponseMessage.Add(ApplicationConstants.DELETE_ERROR + " - " + e.Message);
-                response.ReturnedObject = GetVacationForUser(vacation.CalendarDate.Year,
-                                                vacation.CalendarDate.Month,
-                                                vacation.UserID);
-                return response;
-            }
+                      _context.SaveChanges();
 
-            response.Success = true;
-            response.ResponseMessage.Add(ApplicationConstants.DELETE_SUCCESS);
-            response.ReturnedObject = GetVacationForUser(vacation.CalendarDate.Year,
+                    response.Success = true;
+                    response.ResponseMessages.Add(ApplicationConstants.DELETE_SUCCESS);
+                    response.ReturnedObject = GetVacationForUser(vacation.CalendarDate.Year,
+                                                            vacation.CalendarDate.Month,
+                                                            null,
+                                                            vacation.UserID);
+                    return response;
+                }
+                catch (Exception e)
+                {
+                    response.Success = false;
+                    response.ResponseMessages.Add(ApplicationConstants.DELETE_ERROR + " - " + e.Message);
+                    response.ReturnedObject = GetVacationForUser(vacation.CalendarDate.Year,
                                                     vacation.CalendarDate.Month,
+                                                    null,
                                                     vacation.UserID);
-            return response;
+                    return response;
+                }
+            });
         }
 
-        public ResponseViewModel<List<VacationDataViewModel>> UpdateVacation(List<VacationDataViewModel> vacations, LoginViewModel loggedUser)
+        public Task<ResponseViewModel<List<VacationDataViewModel>>> UpdateVacationAsync (List<VacationDataViewModel> vacations, LoginViewModel loggedUser)
         {
-            var response = new ResponseViewModel<List<VacationDataViewModel>>();
-            var processVacations = new List<VacationDataViewModel>();
-            var vacationToUpdate = new VacationData();
+            return Task.Factory.StartNew(() =>
+            {
+                var response = new ResponseViewModel<List<VacationDataViewModel>>();
+                var vacationToUpdate = new VacationData();
 
-            response = _validator.IsValidForUpdate(vacations, loggedUser);
-            if (!response.Success)
-            {
-                return response;
-            }
-            try
-            {
-                processVacations = vacations;
-                foreach (var vacation in processVacations)
+                response = _validator.IsValidForUpdate(vacations, loggedUser);
+                if (!response.Success)
                 {
-
-                    //Check if data is for insert of update
-                    var vacationDB = _context.VacationData
-                    .Where(c => c.VacationDate == vacation.CalendarDate && c.UserID == vacation.UserID)
-                    .SingleOrDefault();
-
-                    if (vacationDB == null && vacation.Id == default(int))
-                    {
-                        var dataForInsert = VacationDataMapper(vacation);
-                        _context.VacationData.Add(dataForInsert);
-                    }
-                    else
-                    {
-                        //Check if vacation record is deleted meanwhile
-                        vacationToUpdate = _context.VacationData
-                            .Where(c => c.ID == vacation.Id)
-                            .SingleOrDefault();
-
-                        if (vacationToUpdate == null)
-                        {
-                            throw new CustomException(string.Format("The vacation was deleted by another user. Click again for insert!"));
-                        }
-
-                        _context.Entry(vacationToUpdate).Property("RowVersion").OriginalValue = vacation.RowVersion;
-
-                        //change values for update
-                        vacationToUpdate.VacationTypeID = vacation.VacationTypeID;
-                        _context.Update(vacationToUpdate).State = EntityState.Modified;
-                    }
+                    return response;
                 }
                 try
                 {
+                    foreach (var vacation in vacations)
+                    {
+                        //Check if data is for insert of update
+                        var vacationDB = _context.VacationData
+                            .SingleOrDefault(c => c.VacationDate == vacation.CalendarDate && c.UserID == vacation.UserID);
+
+                        if (vacationDB == null && vacation.Id == default(int))
+                        {
+                            var dataForInsert = VacationDataMapper(vacation);
+                            _context.VacationData.Add(dataForInsert);
+                        }
+                        else
+                        {
+                            //Check if vacation record is deleted meanwhile
+                            vacationToUpdate = _context.VacationData
+                                .SingleOrDefault(c => c.ID == vacation.Id);
+
+                            if (vacationToUpdate == null)
+                            {
+                                throw new Exception("The vacation was deleted by another user. Click again for insert!");
+                            }
+
+                            // throws concurrency exception on save changes if item is already modified by another request
+                            _context.Entry(vacationToUpdate).Property("RowVersion").OriginalValue = vacation.RowVersion;
+
+                            //change values for update
+                            vacationToUpdate.VacationTypeID = vacation.VacationTypeID;
+                            _context.Update(vacationToUpdate).State = EntityState.Modified;
+                        }
+                    }
+
                     _context.SaveChanges();
                 }
                 catch (DbUpdateConcurrencyException ex)
                 {
-                    var exceptionEntry = ex.Entries.Single();
+                    string errorMessage;
+                    var exceptionEntry = ex.Entries.First();
                     var clientValues = (VacationData)exceptionEntry.Entity;
                     var databaseEntry = exceptionEntry.GetDatabaseValues();
 
                     if (databaseEntry == null)
                     {
-                        throw new CustomException(string.Format("The vacation was deleted by another user. Click again insert!"));
+                        errorMessage = "The vacation was deleted by another user. Click again for insert!";
                     }
                     else
                     {
                         var databaseValues = (VacationData)databaseEntry.ToObject();
                         if (databaseValues.VacationTypeID != clientValues.VacationTypeID)
                         {
-                            throw new CustomException(string.Format("The Vacation Type is changed by another user! Click again for update!"));
+                            errorMessage = "The Vacation Type is changed by another user! Click again for update!";
                         }
-
-                        throw new CustomException(string.Format("Some data changed meanwhile! Click again for update!"));
+                        else
+                        {
+                            errorMessage = "Some data changed meanwhile! Click again for update!";
+                        }
                     }
-                }
-            }
-            catch (Exception e)
-            {
-                _context.Entry(vacationToUpdate).State = EntityState.Detached;
 
-                response.Success = false;
-                response.ResponseMessage.Add(ApplicationConstants.UPDATE_ERROR + " - " + e.Message);
-                response.ReturnedObject = GetVacationForUser(vacations.FirstOrDefault().CalendarDate.Year,
-                                                vacations.FirstOrDefault().CalendarDate.Month,
-                                                vacations.FirstOrDefault().UserID);
-                return response;
-            }
+                    _context.Entry(vacationToUpdate).State = EntityState.Detached;
 
-            response.Success = true;
-            response.ResponseMessage.Add(ApplicationConstants.UPDATE_SUCCESS);
-            response.ReturnedObject = GetVacationForUser(vacations.FirstOrDefault().CalendarDate.Year,
+                    response.Success = false;
+                    response.ResponseMessages.Add(ApplicationConstants.UPDATE_ERROR + " - " + errorMessage);
+                    response.ReturnedObject = GetVacationForUser(vacations.FirstOrDefault().CalendarDate.Year,
                                                     vacations.FirstOrDefault().CalendarDate.Month,
+                                                    null,
                                                     vacations.FirstOrDefault().UserID);
-            return response;
+                }
+                catch (Exception e)
+                {
+                    response.Success = false;
+                    response.ResponseMessages.Add(ApplicationConstants.UPDATE_ERROR + " - " + e.Message);
+                    response.ReturnedObject = GetVacationForUser(vacations.FirstOrDefault().CalendarDate.Year,
+                                                    vacations.FirstOrDefault().CalendarDate.Month,
+                                                    null,
+                                                    vacations.FirstOrDefault().UserID);
+                    return response;
+                }
+                response.Success = true;
+                response.ResponseMessages.Add(ApplicationConstants.UPDATE_SUCCESS);
+                response.ReturnedObject = GetVacationForUser(vacations.FirstOrDefault().CalendarDate.Year,
+                                                        vacations.FirstOrDefault().CalendarDate.Month,
+                                                        null,
+                                                        vacations.FirstOrDefault().UserID);
+                return response;
+            });
         }
 
-        public List<UserViewModel> GetUsersData(int year, int month)
+        public List<UserViewModel> GetUsersDataIncludeVacation(int year, int month, string firstName, string lastName, int? vacationType)
         {
+            List<User> dbUsersData = new List<User>();
             List<UserViewModel> users = new List<UserViewModel>();
-            var dbUsersData = _context.Users.Include(user => user.VacationData).AsNoTracking().ToList();
+
+            if (string.IsNullOrEmpty(firstName) && string.IsNullOrEmpty(lastName))
+            {
+                dbUsersData = _context.Users.Include(user => user.VacationData).AsNoTracking().ToList();
+            }
+            else{
+                dbUsersData = _context.Users.Include(user => user.VacationData)
+                .Where(x => (!string.IsNullOrEmpty(firstName) && x.FirstName.ToLower().Contains(firstName.ToString().ToLower())) || (!string.IsNullOrEmpty(lastName) && x.LastName.ToLower().Contains(lastName.ToString().ToLower())))
+                .AsNoTracking()
+                .ToList();
+            }
+            
+
             foreach (var user in dbUsersData)
             {
                 var data = new UserViewModel();
                 data.Id = user.ID;
                 data.FirstName = user.FirstName;
                 data.LastName = user.LastName;
-                data.VacationData = GetVacationForUser(year, month, data.Id);
+                data.VacationData = GetVacationForUser(year, month, vacationType, data.Id);
 
                 users.Add(data);
             }
             return users;
         }
 
-        private List<VacationDataViewModel> GetVacationForUser(int year, int month, int userId)
+        private List<VacationDataViewModel> GetVacationForUser(int year, int month, int? vacationType, int userId)
         {
             List<VacationData> vacationDB = new List<VacationData>();
             List<VacationDataViewModel> vacation = new List<VacationDataViewModel>();
 
-            vacationDB = _context.VacationData.Where(x => x.UserID == userId).Select(row => row).ToList();
+            if(vacationType != default(int) && vacationType != null)
+            {
+                vacationDB = _context.VacationData.Where(x => x.UserID == userId && x.VacationDate.Year == year && x.VacationDate.Month == month && x.VacationTypeID == vacationType).Select(row => row).ToList();
+            }
+            else{
+                vacationDB = _context.VacationData.Where(x => x.UserID == userId && x.VacationDate.Year == year && x.VacationDate.Month == month).Select(row => row).ToList();
+            }
 
             int monthDays = DateTime.DaysInMonth(year, month);
+
             for (int day = 1; day <= monthDays; day++)
             {
                 var data = new VacationDataViewModel();
                 data.Day = day;
                 data.CalendarDate = new DateTime(year, month, day);
-                data.Id = vacationDB.Where(x => x.VacationDate == data.CalendarDate).Select(x => x.ID).FirstOrDefault();
+                data.Id = vacationDB.FirstOrDefault(x => x.VacationDate == data.CalendarDate)?.ID ?? default(int);
                 data.IsOnVacation = vacationDB.Any(x => x.ID == data.Id);
                 data.DayName = data.CalendarDate.DayOfWeek.ToString().Substring(0, 3);
-                data.VacationTypeID = vacationDB.Where(x => x.ID == data.Id).Select(x => x.VacationTypeID).FirstOrDefault();
+                data.VacationTypeID = vacationDB.FirstOrDefault(x => x.ID == data.Id)?.VacationTypeID ?? default(int);
                 data.UserID = userId;
-                data.RowVersion = vacationDB.Where(x => x.ID == data.Id).Select(x => x.RowVersion).FirstOrDefault();
+                data.RowVersion = vacationDB.FirstOrDefault(x => x.ID == data.Id)?.RowVersion;
+                if ((data.CalendarDate.DayOfWeek == DayOfWeek.Saturday) || (data.CalendarDate.DayOfWeek == DayOfWeek.Sunday))
+                {
+                    data.IsNonWorkingDay = true;
+                }
+                else
+                {
+                    data.IsNonWorkingDay = false;
+                }
 
-                vacation.Add(data);
+                    vacation.Add(data);
             }
 
             return vacation;
@@ -211,14 +243,13 @@ namespace VacationCalendar.Api.Services
 
         private VacationData VacationDataMapper(VacationDataViewModel vacationView)
         {
-            var vacation = new VacationData()
+            return new VacationData()
             {
                 VacationDate = vacationView.CalendarDate,
                 UserID = vacationView.UserID,
                 VacationTypeID = vacationView.VacationTypeID,
                 RowVersion = vacationView.RowVersion
             };
-            return vacation;
         }
     }
 }

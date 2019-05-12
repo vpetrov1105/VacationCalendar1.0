@@ -1,11 +1,11 @@
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
-import { FormControl, FormGroup, Validators, FormBuilder, AbstractControl, ValidatorFn } from '@angular/forms';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IStaticLists } from 'src/interfaces/static-lists.interface';
 import { User } from 'src/models/user.model';
 import { MatDatepickerInputEvent } from '@angular/material';
 import { IVacationData } from 'src/interfaces/vacation-data.interface';
-import { VacationData } from 'src/models/vacation-data.model';
 import { ResponseMessage } from 'src/models/response-message.model';
+import { VacationDataService } from 'src/services/vacation-data.service';
 
 @Component({
   selector: 'app-vacation-details',
@@ -29,7 +29,7 @@ export class VacationDetailsComponent implements OnInit {
   dateToCntrl: FormControl
   vacationTypeCntrl: FormControl
   
-  constructor(private vacationData: VacationData) {
+  constructor(private vacationService: VacationDataService) {
     this.createFormControls()
     this.createForm()
     this.responseVacation = new EventEmitter<ResponseMessage>()
@@ -74,19 +74,19 @@ saveData(){
       }
     }
 
-    this.vacationData.updateVacation(vacationTemp)
+    this.vacationService.updateVacation(vacationTemp)
     .subscribe(
         data => {
             if (data.success) {
               if(data.returnedObject != undefined){
-                this.updateContent(data.returnedObject)
+                this.updateContent(data)
               }
               this.responseVacation.emit(data) 
             }
         },
         error => {
           if(error.returnedObject != undefined){
-            this.updateContent(error.returnedObject)
+            this.updateContent(error)
           }
           this.responseVacation.emit(error) 
         }
@@ -104,8 +104,11 @@ toEvent(type: string, event: MatDatepickerInputEvent<Date>) {
   this.maxDateFrom = event.value
 }
 
-private updateContent(newVacationData: IVacationData[]){
-  this.user.vacationData = newVacationData;
+private updateContent(response: ResponseMessage){
+  if(response.success){
+    this.user.isDetailShown = false
+  }
+  this.user.vacationData = response.returnedObject as IVacationData[];
 }
 
 }

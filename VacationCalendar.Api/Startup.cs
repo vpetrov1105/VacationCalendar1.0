@@ -19,6 +19,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using VacationCalendar.Api.Helpers;
 using System.Text;
 using VacationCalendar.Api.Validators;
+using VacationCalendar.Api.Services.Interfaces;
 
 namespace VacationCalendar.Api
 {
@@ -66,8 +67,10 @@ namespace VacationCalendar.Api
             services.AddScoped<ILoginService, LoginService>();
             services.AddScoped<ICalendarService, CalendarService>();
             services.AddScoped<IStaticListsService, StaticListsService>();
+            services.AddScoped<IUserService, UserService>();
             services.AddScoped<IVacationDataService, VacationDataService>();
             services.AddScoped<VacationDataValidator>();
+            services.AddScoped<UserDataValidator>();
 
         }
 

@@ -1,0 +1,48 @@
+<div class="filter">
+  <form novalidate [formGroup]="homeFilterDataGroup" #filterGroup="ngForm" (ngSubmit)="setFilter()">
+      <fieldset>
+        <div class="row justify-content-center">
+          <div class="col-md-2 margin-left">
+            <mat-form-field appearance="legacy">
+              <input matInput placeholder="First Name" [formControl]="firstNameCntrl">
+            </mat-form-field>
+          </div>
+          <div class="col-md-2 margin-left">
+            <mat-form-field appearance="legacy">
+              <input matInput placeholder="Last Name" [formControl]="lastNameCntrl">
+            </mat-form-field>
+          </div>
+          <div class="col-md-2 margin-left">
+            <mat-form-field>
+              <mat-label>Vacation Type</mat-label>
+              <mat-select [formControl]="vacationTypeCntrl">
+                <mat-option *ngFor="let vacationType of staticLists.vacationTypes;" [value]="vacationType.id">
+                  {{vacationType.vacationTypeName}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+        </div>
+        <div class="col-md-3 margin-left">
+            <mat-form-field>
+              <input matInput [matDatepicker]="dp" placeholder="Month-Year" [formControl]="monthYearCntrl">
+              <mat-datepicker-toggle matSuffix [for]="dp"></mat-datepicker-toggle>
+              <mat-datepicker #dp
+                              startView="multi-year"
+                              (yearSelected)="chosenYearHandler($event)"
+                              (monthSelected)="chosenMonthHandler($event, dp)"
+                              panelClass="example-month-picker">
+              </mat-datepicker>
+            </mat-form-field>
+          </div>
+          <div class="col-md-2 search-button margin-left">
+            <button class="btn btn-primary" id="flter_submit" name="filter_submit" type="submit">
+                <i class="fa fa-search" data-toggle="tooltip" data-placement="top" title="Save"></i>
+            </button>
+            <button class="btn btn-primary margin-left" (click)= "resetFilter()" id="filter_remove" name="filter_remove">
+                <i class="fa fa-times" data-toggle="tooltip" data-placement="top" title="Remove filter"></i>
+            </button>
+          </div>
+        </div>
+      </fieldset>
+  </form>
+</div>

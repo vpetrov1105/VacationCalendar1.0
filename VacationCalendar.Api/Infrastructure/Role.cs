@@ -9,6 +9,6 @@ namespace VacationCalendar.Api.Infrastructure
     {
         public const string Admin = "ADMIN";
         public const string User = "USER";
-        public const string Anonymus = "ANONYMUS";
+        public const string Anonymous = "ANONYMOUS";
     }
 }

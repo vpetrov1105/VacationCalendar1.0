@@ -13,9 +13,9 @@ namespace VacationCalendar.Api.Infrastructure
 
         //respose messages
         public const string ERROR = "Error on submited request!!";
-        public const string DELETE_ERROR= "Vacation delete error!";
-        public const string DELETE_SUCCESS = "Vacation successfully deleted!";
-        public const string UPDATE_ERROR = "Vacation update/insert error!";
-        public const string UPDATE_SUCCESS = "Data successfully updated/inserted!";
+        public const string DELETE_ERROR= "Delete action error!";
+        public const string DELETE_SUCCESS = "Successfully deleted!";
+        public const string UPDATE_ERROR = "Update action error!";
+        public const string UPDATE_SUCCESS = "Data successfully updated!";
     }
 }

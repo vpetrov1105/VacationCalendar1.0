@@ -2,10 +2,8 @@
     <div class="row">
     <form class="vacation-form" novalidate [formGroup]="vacationDataGroup" #vacationDataForm="ngForm" (ngSubmit)="saveData()">
         <fieldset>
-        
           <legend>Vacation insert/edit</legend>
           <div class="row">
-            
             <div class="col-md-4">
               <mat-form-field>
                   <input matInput [min]="minDateFrom" [max]="maxDateFrom"  placeholder="From" (dateInput)="fromEvent('input', $event)" (dateChange)="fromEvent('change', $event)" [matDatepicker]="picker1" [formControl]="dateFromCntrl">

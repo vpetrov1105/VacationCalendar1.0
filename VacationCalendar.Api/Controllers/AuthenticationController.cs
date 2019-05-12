@@ -22,9 +22,9 @@ namespace VacationCalendar.Api.Controllers
 
         [AllowAnonymous]
         [HttpPost]
-        public IActionResult Authenticate([FromBody] LoginViewModel userParam)
+        public async Task<IActionResult> Authenticate([FromBody] LoginViewModel userParam)
         {
-            var user = _userService.Authenticate(userParam.Username, userParam.Password);
+            var user = await _userService.AuthenticateAsync(userParam.Username, userParam.Password);
 
             if (user == null)
                 return BadRequest(new { message = "Username or password is incorrect" });

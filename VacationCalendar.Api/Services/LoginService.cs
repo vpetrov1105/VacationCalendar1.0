@@ -4,6 +4,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using VacationCalendar.Api.EntityModels;
@@ -13,11 +14,6 @@ using VacationCalendar.Api.ViewModels;
 
 namespace VacationCalendar.Api.Services
 {
-    public interface ILoginService
-    {
-        LoginViewModel Authenticate(string username, string password);
-    }
-
     public class LoginService : ILoginService
     {
 
@@ -30,34 +26,37 @@ namespace VacationCalendar.Api.Services
             _appSettings = appSettings.Value;
         }
 
-        public LoginViewModel Authenticate(string username, string password)
+        public Task<LoginViewModel> AuthenticateAsync(string username, string password)
         {
-            var user = GetUserData(username, password);
-
-            // return null if user not found
-            if (user == null)
-                return null;
-
-            // authentication successful so generate jwt token
-            var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
-            var tokenDescriptor = new SecurityTokenDescriptor
+            return Task.Factory.StartNew(() =>
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                var user = GetUserData(username, password);
+
+                // return null if user not found
+                if (user == null)
+                    return null;
+
+                // authentication successful so generate jwt token
+                var tokenHandler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_appSettings.Secret);
+                var tokenDescriptor = new SecurityTokenDescriptor
                 {
-                    new Claim(ClaimTypes.Name, user.Id.ToString()),
-                    new Claim(ClaimTypes.Role, user.Role)
-                }),
-                Expires = DateTime.UtcNow.AddHours(1),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-            };
-            var token = tokenHandler.CreateToken(tokenDescriptor);
-            user.Token = tokenHandler.WriteToken(token);
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                        new Claim(ClaimTypes.Name, user.Id.ToString()),
+                        new Claim(ClaimTypes.Role, user.Role)
+                    }),
+                    Expires = DateTime.UtcNow.AddHours(1),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+                };
+                var token = tokenHandler.CreateToken(tokenDescriptor);
+                user.Token = tokenHandler.WriteToken(token);
 
-            // remove password before returning
-            user.Password = null;
+                // remove password before returning
+                user.Password = null;
 
-            return user;
+                return user;
+            });
         }
 
         private LoginViewModel GetUserData(string username, string password)

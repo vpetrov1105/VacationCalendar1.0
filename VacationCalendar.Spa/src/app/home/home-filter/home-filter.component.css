@@ -1,0 +1,20 @@
+@media (min-width: 1200px) {
+    .row{
+        min-width: 1200px
+    }
+}
+.filter{
+    margin-top: 10px;
+    margin-left: 25px;
+    margin-bottom: 10px;
+    border:1px solid black
+    
+}
+
+.search-button{
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+.margin-left{
+    margin-left:5px;
+}

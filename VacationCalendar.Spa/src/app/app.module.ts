@@ -10,6 +10,9 @@ import { LoginComponent } from './login/login.component';
 import { JwtInterceptor } from 'src/httpInterceptors/jwt.interceptor';
 import { ErrorInterceptor } from 'src/httpInterceptors/error.interceptor';
 import { AuthenticationService } from 'src/services/authentication.service';
+import { UserModule } from './user/user.module';
+import { Ng4LoadingSpinnerModule, Ng4LoadingSpinnerService } from 'ng4-loading-spinner';
+import { SpinnerInterceptor } from 'src/httpInterceptors/spinner.interceptor';
 
 @NgModule({
   declarations: [
@@ -20,16 +23,20 @@ import { AuthenticationService } from 'src/services/authentication.service';
     BrowserModule,
     AppRoutingModule,
     HomeModule,
+    UserModule,
     HttpClientModule,
     BrowserAnimationsModule,
     FormsModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    Ng4LoadingSpinnerModule.forRoot()
   ],
   providers: [
     HttpClientModule,
+    Ng4LoadingSpinnerService,
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
-    AuthenticationService
+    AuthenticationService,
+    {provide: HTTP_INTERCEPTORS, useClass: SpinnerInterceptor, multi: true},
   ],
   bootstrap: [AppComponent]
 })

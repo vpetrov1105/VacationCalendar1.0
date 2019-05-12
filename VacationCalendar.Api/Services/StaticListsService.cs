@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using VacationCalendar.Api.EntityModels;
 using VacationCalendar.Api.ViewModels;
 
 namespace VacationCalendar.Api.Services
 {
-    public interface IStaticListsService
-    {
-        StaticListsViewModel GetStaticLists();
-    }
-
     public class StaticListsService : IStaticListsService
     {
         private readonly VacationCalendarContext _context;
@@ -20,7 +16,7 @@ namespace VacationCalendar.Api.Services
         }
 
         public StaticListsViewModel GetStaticLists()
-        {
+    {
             var lists = new StaticListsViewModel();
             lists.vacationTypes = GetVacationTypes();
             return lists;

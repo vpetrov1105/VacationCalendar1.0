@@ -16,22 +16,22 @@ namespace VacationCalendar.Api.Validators
             if (model.Id == default(int))
             {
                 response.Success = false;
-                response.ResponseMessage.Add(ApplicationConstants.ERROR);
+                response.ResponseMessages.Add(ApplicationConstants.ERROR);
                 return response;
             }
 
             response.Success = true;
 
-            if ((model.UserID != loggedUser.Id && loggedUser.Role == Role.User) || loggedUser.Role == Role.Anonymus)
+            if ((model.UserID != loggedUser.Id && loggedUser.Role == Role.User) || loggedUser.Role == Role.Anonymous)
             {
-                response.ResponseMessage.Add("Not allowed to maniplate data for requested user!");
+                response.ResponseMessages.Add("Not allowed to maniplate data for requested user!");
                 response.Success = false;
                 return response;
             }
 
             if (model.Id == default(int))
             {
-                response.ResponseMessage.Add("Vacation id is null!");
+                response.ResponseMessages.Add("Vacation id is null!");
                 response.Success = false;
             }
 
@@ -42,37 +42,44 @@ namespace VacationCalendar.Api.Validators
         {
             var response = new ResponseViewModel<List<VacationDataViewModel>>();
 
-            if (models.Count() == 0)
+            if (!models.Any())
             {
                 response.Success = false;
-                response.ResponseMessage.Add(ApplicationConstants.ERROR);
+                response.ResponseMessages.Add(ApplicationConstants.ERROR);
                 return response;
             }
 
             response.Success = true;
+            Dictionary<int, string> messages = new Dictionary<int, string>();
             foreach (var model in models)
             {
-                if ((model.UserID != loggedUser.Id && loggedUser.Role == Role.User) || loggedUser.Role == Role.Anonymus)
+                if ((model.UserID != loggedUser.Id && loggedUser.Role == Role.User) || loggedUser.Role == Role.Anonymous)
                 {
-                    response.ResponseMessage.Add("Not allowed to maniplate data for requested user!");
+                    if (!messages.ContainsKey(1))
+                        messages.Add(1, "Not allowed to manipulate data for requested user!");
+
                     response.Success = false;
-                    break;
                 }
 
                 if(model.CalendarDate == default(DateTime))
                 {
-                    response.ResponseMessage.Add("Date cannot be empty!");
+                    if (!messages.ContainsKey(2))
+                        messages.Add(2, "Date cannot be empty!");
+
                     response.Success = false;
-                    break;
                 }
 
                 if (model.VacationTypeID == default(int))
                 {
-                    response.ResponseMessage.Add("Vacation Type cannot be empty!");
+                    if (!messages.ContainsKey(3))
+                        messages.Add(3, "Vacation Type cannot be empty!");
+
                     response.Success = false;
-                    break;
                 }
             }
+
+            if (!response.Success)
+                response.ResponseMessages = messages.Values.ToList();
             
 
             return response;

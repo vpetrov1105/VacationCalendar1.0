@@ -1,0 +1,76 @@
+
+<div class="container">
+    <div class="row justify-content-md-center validation-row">
+        <app-validation-summary *ngIf="response" [response]="response"></app-validation-summary>
+    </div>
+</div>
+
+<div class="row justify-content-md-left insert-button">
+    <button  class="btn btn-primary btn-primary btn-sm" (click)="insertUser()" data-toggle="tooltip" data-placement="top" title="Insert" *ngIf="currentUser.role == role.admin"><i class="fa fa-plus-square fa-xs"></i></button>
+</div>
+<div class="container insert-new" *ngIf="newUser != undefined && newUser.isDetailShown">
+        <app-user-details [user]="newUser" [currentUser]="currentUser"  [isNew]="true" (responseUser)="responseUser($event)"></app-user-details>
+</div>
+  
+  <div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+          <tr class="text-center"> 
+            <th class="text-center">
+                <div>First Name</div>  
+            </th>
+            <th class="text-center">
+                <div>Last name</div>
+            </th>
+            <th class="text-center">
+                <div>Birth Date</div>  
+            </th>
+            <th class="text-center">
+                <div>Usename</div>
+            </th>
+            <th class="text-center">
+                <div>Role</div> 
+            </th>
+            <th class="text-center">
+                <div>Office County Code</div> 
+            </th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+            <ng-container *ngFor="let user of users; let i = index"> 
+                  <tr>
+                    <td class="text-center">
+                        <div>{{user.firstName}}</div>  
+                    </td>
+                    <td class="text-center">
+                        <div>{{user.lastName}}</div>
+                    </td>
+                    <td class="text-center">
+                        <div>{{user.birthDate | date: 'dd/MM/yyyy'}}</div>  
+                    </td>
+                    <td class="text-center">
+                        <div>{{user.userName}}</div>
+                    </td>
+                    <td class="text-center">
+                        <div>{{user.role}}</div> 
+                    </td>
+                    <td class="text-center">
+                        <div>{{user.officeCountryCode}}</div> 
+                    </td>
+                    <td class="text-center">
+                        <div>
+                          <button  class="btn btn-primary btn-primary btn-sm action-button" (click)="editUser(user)" data-toggle="tooltip" data-placement="top" title="Edit"><i class="fa fa-edit fa-xs"></i></button>
+                          <button  *ngIf="currentUser.role == role.admin" class="btn btn-primary btn-primary btn-sm action-button" (click)="deleteUser(user)" data-toggle="tooltip" data-placement="top" title="Delete"><i class="fa fa-trash fa-xs"></i></button>
+                        </div> 
+                    </td>
+                  </tr>
+                <tr *ngIf="user.isDetailShown && (currentUser.role == role.admin ||  currentUser.id == user.id)">
+                  <td colspan="6">
+                    <app-user-details [user]="user" [currentUser]="currentUser"  [isNew]="false" (responseUser)="responseUser($event)"></app-user-details>
+                  </td>
+                </tr>
+            </ng-container>
+        </tbody>
+    </table>
+  </div>

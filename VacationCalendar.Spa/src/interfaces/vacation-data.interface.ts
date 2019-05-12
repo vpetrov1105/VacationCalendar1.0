@@ -7,4 +7,5 @@ export interface IVacationData {
    vacationTypeID: number
    userID: number
    rowVersion: any
+   isNonWorkingDay: boolean
 }
