@@ -7,3 +7,7 @@ Application for maintaining employees vacation days
   Bootrap 4.3
   FontAwsome 4.7
   
+## Test logins by role:
+ADMIN: vedran vedran
+USER: ivan ivan
+ANONYMOUS: jan jan
