@@ -23,13 +23,13 @@ namespace VacationCalendar.Api.Services
             _validator = validator;
         }
 
-        public Task<ResponseViewModel<List<VacationDataViewModel>>> DeleteVacationAsync (VacationDataViewModel vacation, LoginViewModel loggedUser)
+        public Task<ResponseViewModel<List<VacationDataViewModel>>> DeleteVacationAsync (List<VacationDataViewModel> vacations, LoginViewModel loggedUser)
         {
             return Task.Factory.StartNew(() =>
             {
                 var response = new ResponseViewModel<List<VacationDataViewModel>>();
 
-                response = _validator.IsValidForDelete(vacation, loggedUser);
+                response = _validator.IsValidForDelete(vacations, loggedUser);
                 if (!response.Success)
                 {
                     return response;
@@ -37,34 +37,37 @@ namespace VacationCalendar.Api.Services
 
                 try
                 {
-                    var vacationToDelete = _context.VacationData
-                                .SingleOrDefault(c => c.ID == vacation.Id);
+                    foreach (var vacation in vacations) { 
 
-                    if (vacationToDelete == null)
-                    {
-                        throw new Exception(string.Format("Meanwhile the vacation was deleted by another user!"));
+                        var vacationToDelete = _context.VacationData
+                                    .SingleOrDefault(c => c.ID == vacation.Id);
+
+                        if (vacationToDelete == null)
+                        {
+                            throw new Exception(string.Format("Meanwhile the vacation was deleted by another user!"));
+                        }
+
+                        _context.VacationData.Remove(_context.VacationData.Find(vacation.Id));
                     }
-
-                    _context.VacationData.Remove(_context.VacationData.Find(vacation.Id));
 
                       _context.SaveChanges();
 
                     response.Success = true;
                     response.ResponseMessages.Add(ApplicationConstants.DELETE_SUCCESS);
-                    response.ReturnedObject = GetVacationForUser(vacation.CalendarDate.Year,
-                                                            vacation.CalendarDate.Month,
+                    response.ReturnedObject = GetVacationForUser(vacations.FirstOrDefault().CalendarDate.Year,
+                                                            vacations.FirstOrDefault().CalendarDate.Month,
                                                             null,
-                                                            vacation.UserID);
+                                                            vacations.FirstOrDefault().UserID);
                     return response;
                 }
                 catch (Exception e)
                 {
                     response.Success = false;
                     response.ResponseMessages.Add(ApplicationConstants.DELETE_ERROR + " - " + e.Message);
-                    response.ReturnedObject = GetVacationForUser(vacation.CalendarDate.Year,
-                                                    vacation.CalendarDate.Month,
+                    response.ReturnedObject = GetVacationForUser(vacations.FirstOrDefault().CalendarDate.Year,
+                                                    vacations.FirstOrDefault().CalendarDate.Month,
                                                     null,
-                                                    vacation.UserID);
+                                                    vacations.FirstOrDefault().UserID);
                     return response;
                 }
             });
@@ -185,15 +188,24 @@ namespace VacationCalendar.Api.Services
                 .AsNoTracking()
                 .ToList();
             }
-            
 
             foreach (var user in dbUsersData)
             {
+                var vacation_data = GetVacationForUser(year, month, vacationType, user.ID);
+
+                if (vacationType != default(int) && vacationType != null && vacation_data.Count <= 0)
+                    continue;
+
                 var data = new UserViewModel();
                 data.Id = user.ID;
                 data.FirstName = user.FirstName;
                 data.LastName = user.LastName;
-                data.VacationData = GetVacationForUser(year, month, vacationType, data.Id);
+                data.VacationData = vacation_data;
+
+                if (data.VacationData.SingleOrDefault(x => x.IsOnVacation == true && x.IsToday == true) != default(VacationDataViewModel))
+                {
+                    data.IsCurrentlyOnVacation = true;
+                }
 
                 users.Add(data);
             }
@@ -205,9 +217,11 @@ namespace VacationCalendar.Api.Services
             List<VacationData> vacationDB = new List<VacationData>();
             List<VacationDataViewModel> vacation = new List<VacationDataViewModel>();
 
-            if(vacationType != default(int) && vacationType != null)
+            if (vacationType != default(int) && vacationType != null)
             {
                 vacationDB = _context.VacationData.Where(x => x.UserID == userId && x.VacationDate.Year == year && x.VacationDate.Month == month && x.VacationTypeID == vacationType).Select(row => row).ToList();
+                if (vacationDB.Count <= 0)
+                    return vacation;
             }
             else{
                 vacationDB = _context.VacationData.Where(x => x.UserID == userId && x.VacationDate.Year == year && x.VacationDate.Month == month).Select(row => row).ToList();
@@ -235,7 +249,16 @@ namespace VacationCalendar.Api.Services
                     data.IsNonWorkingDay = false;
                 }
 
-                    vacation.Add(data);
+                if (data.CalendarDate.Date == DateTime.Today)
+                {
+                    data.IsToday = true;
+                }
+                else
+                {
+                    data.IsToday = false;
+                }
+
+                vacation.Add(data);
             }
 
             return vacation;

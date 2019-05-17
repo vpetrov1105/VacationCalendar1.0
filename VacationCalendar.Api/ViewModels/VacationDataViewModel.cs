@@ -19,6 +19,7 @@ namespace VacationCalendar.Api.ViewModels
         public int UserID { get; set; }
         public byte[] RowVersion { get; set; }
         public bool IsNonWorkingDay { get; set; }
+        public bool IsToday { get; set; }
 
     }
 }

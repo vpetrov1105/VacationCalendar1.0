@@ -21,7 +21,9 @@ import { HomeFilterComponent } from './home-filter/home-filter.component';
 export class HomeComponent implements OnInit {
   @ViewChild(HomeFilterComponent) filterComp:HomeFilterComponent;
   currentUser: ILoginUser
-  staticLists: IStaticLists
+  staticLists: IStaticLists = {
+    vacationTypes: []
+  }
   dayNames : IVacationData[]
   dialogRef: MatDialogRef<ConfirmationDialogComponent>
   response: ResponseMessage
@@ -79,7 +81,9 @@ export class HomeComponent implements OnInit {
         this.dialogRef.updatePosition({ top: '3%' })
         this.dialogRef.afterClosed().subscribe(result => {
             if (result) {
-                this.vacationService.deleteVacation(vacation)
+              let dataToDelete: IVacationData[] = []
+              dataToDelete.push(vacation)
+                this.vacationService.deleteVacation(dataToDelete)
                     .subscribe(
                         data => {
                             if (data.success) {
@@ -123,7 +127,5 @@ export class HomeComponent implements OnInit {
         error => console.log(error)
     )
   }
-
-
 
 }

@@ -13,7 +13,7 @@ export class VacationDataService {
 
   constructor(private http: HttpClient) { }
 
-  deleteVacation(vacation: IVacationData): Observable<ResponseMessage> {
+  deleteVacation(vacation: IVacationData[]): Observable<ResponseMessage> {
     return this.http.post<ResponseMessage>('/api/calendar/DeleteVacation', vacation)
         .pipe(map(
             data => {

@@ -45,11 +45,11 @@ namespace VacationCalendar.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<JsonResult> DeleteVacation([FromBody]VacationDataViewModel vacation)
+        public async Task<JsonResult> DeleteVacation([FromBody]List<VacationDataViewModel> vacations)
         {
             var loggedUser = UtilityFunctions.GetLoggedUser(User.Claims);
 
-            var delete = await _vacationService.DeleteVacationAsync(vacation, loggedUser);
+            var delete = await _vacationService.DeleteVacationAsync(vacations, loggedUser);
             if (delete.Success)
             {
                 var result = Json(delete);

@@ -2,10 +2,11 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { IStaticLists } from 'src/interfaces/static-lists.interface';
 import { User } from 'src/models/user.model';
-import { MatDatepickerInputEvent } from '@angular/material';
+import { MatDatepickerInputEvent, MatDialogRef, MatDialog } from '@angular/material';
 import { IVacationData } from 'src/interfaces/vacation-data.interface';
 import { ResponseMessage } from 'src/models/response-message.model';
 import { VacationDataService } from 'src/services/vacation-data.service';
+import { ConfirmationDialogComponent } from 'src/app/shared/confirmation-dialog/confirmation-dialog.component';
 
 @Component({
   selector: 'app-vacation-details',
@@ -28,8 +29,10 @@ export class VacationDetailsComponent implements OnInit {
   dateFromCntrl: FormControl
   dateToCntrl: FormControl
   vacationTypeCntrl: FormControl
+
+  dialogRef: MatDialogRef<ConfirmationDialogComponent>
   
-  constructor(private vacationService: VacationDataService) {
+  constructor(private vacationService: VacationDataService, public dialog: MatDialog) {
     this.createFormControls()
     this.createForm()
     this.responseVacation = new EventEmitter<ResponseMessage>()
@@ -93,6 +96,45 @@ saveData(){
     )
   }
 
+}
+
+deleteData(){
+  if (this.vacationDataGroup.valid) 
+  {
+    this.dialogRef = this.dialog.open(ConfirmationDialogComponent)
+        this.dialogRef.componentInstance.confirmMessage = "Are you sure you want to delete vacation for choosen period and type?"
+        this.dialogRef.updatePosition({ top: '3%' })
+        this.dialogRef.afterClosed().subscribe(result => {
+            if (result) {
+              let vacationTemp: IVacationData[] = []
+              for(let vacation of this.user.vacationData){
+                if(new Date(vacation.calendarDate) >= new Date(this.dateFromCntrl.value) && new Date(vacation.calendarDate) <= new Date(this.dateToCntrl.value) &&
+                  vacation.vacationTypeID == Number(this.vacationTypeCntrl.value))
+                {
+                  vacationTemp.push(vacation)
+                }
+              }
+              this.vacationService.deleteVacation(vacationTemp)
+                  .subscribe(
+                      data => {
+                          if (data.success) {
+                            if(data.returnedObject != undefined){
+                              this.updateContent(data)
+                            }
+                            this.responseVacation.emit(data) 
+                          }
+                      },
+                      error => {
+                        if(error.returnedObject != undefined){
+                          this.updateContent(error)
+                        }
+                        this.responseVacation.emit(error) 
+                      }
+                  )
+            }
+            this.dialogRef = null
+        })
+  }
 }
 
 

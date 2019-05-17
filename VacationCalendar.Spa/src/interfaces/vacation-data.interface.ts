@@ -8,4 +8,5 @@ export interface IVacationData {
    userID: number
    rowVersion: any
    isNonWorkingDay: boolean
+   isToday: boolean
 }

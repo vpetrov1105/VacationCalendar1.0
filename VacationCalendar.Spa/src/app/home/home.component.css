@@ -19,7 +19,13 @@ table, th, td {
   background: #FFE9E9;
 }
 .on-vacation {
-    background: #194BC8;
+  background: #194BC8;
+}
+.on-vacation-holiday {
+    background: #FF7777;
+}
+.on-vacation-sick{
+  background: #35CB3B;
 }
 .center{
   text-align: center;
@@ -40,11 +46,20 @@ table, th, td {
   padding-left: 0.2rem;
   padding-right: 0.2rem;
 
-
 }
 .delete-button{
   padding-top: 0rem;
   padding-bottom: 0rem;
   padding-left: 0.3rem;
   padding-right: 0.3rem;
+}
+.dot {
+  height: 13px;
+  width: 13px;
+  background-color: #028019;
+  border-radius: 50%;
+  display: inline-block;
+}
+.today{
+  background-color: #B3D9FF
 }

@@ -17,6 +17,7 @@ namespace VacationCalendar.Api.ViewModels
         public string Role { get; set; }
         public string OfficeCountryCode { get; set; }
         public byte[] RowVersion { get; set; }
+        public bool IsCurrentlyOnVacation { get; set; }
         public List<VacationDataViewModel> VacationData { get; set; }
     }
 }

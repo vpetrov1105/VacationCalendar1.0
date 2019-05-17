@@ -41,10 +41,13 @@
             </div>
           </div>
           <div class="row justify-content-end">
-              <div class="col-md-1">
-                <button class="btn btn-primary" id="save" name="save" type="submit">
-                    <i class="fa fa-save fa-lg" data-toggle="tooltip" title="Save"></i>
-                </button>
+              <div class="col-md-2 text-center">
+                  <button class="btn btn-primary delete-period-button" id="delete" name="delete" (click)= "deleteData()">
+                      <i class="fa fa-trash fa-lg" data-toggle="tooltip" title="Delete"></i>
+                  </button>
+                  <button class="btn btn-primary" id="save" name="save" type="submit">
+                      <i class="fa fa-save fa-lg" data-toggle="tooltip" title="Save"></i>
+                  </button>
               </div>
           </div>
         </fieldset>

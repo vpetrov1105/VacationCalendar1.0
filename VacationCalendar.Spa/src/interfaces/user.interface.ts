@@ -10,5 +10,6 @@ export interface IUser {
     role: string
     officeCountryCode: string
     rowVersion: any
+    isCurrentlyOnVacation: boolean
     vacationData: IVacationData[]
 }

@@ -11,6 +11,7 @@ export class User {
     role: string = ""
     officeCountryCode: string = ""
     rowVersion: any
+    isCurrentlyOnVacation: boolean
     vacationData: IVacationData[]
     isDetailShown: boolean = false
 
@@ -30,6 +31,7 @@ export class User {
             user.role = iUser.role
             user.officeCountryCode = iUser.officeCountryCode
             user.rowVersion = iUser.rowVersion
+            user.isCurrentlyOnVacation = iUser.isCurrentlyOnVacation
             user.vacationData = iUser.vacationData
 
             users.push(user)

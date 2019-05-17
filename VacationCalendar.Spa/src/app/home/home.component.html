@@ -1,5 +1,7 @@
-<div class="row justify-content-md-left">
-  <app-home-filter [staticLists]="staticLists" (filterValues)="filterValues($event)"></app-home-filter>
+<div class="container">
+  <div class="row justify-content-md-left">
+    <app-home-filter [staticLists]="staticLists" (filterValues)="filterValues($event)"></app-home-filter>
+  </div>
 </div>
 
 <div class="container">
@@ -31,7 +33,7 @@
               <button  class="btn btn-primary btn-primary" (click)="changeMode(false)" data-toggle="tooltip" data-placement="top" title="Home" *ngIf="(currentUser.role != role.anonymous && calendarData.isInEditMode)"><i class="fa fa-home"></i></button>
             </div>
           </td>
-          <td *ngFor="let dayName of dayNames" class="center">
+          <td *ngFor="let dayName of dayNames" class="center" [class.today]="dayName.isToday">
               <div>{{dayName.day}} </div>
               <div>({{dayName.dayName}})</div>
           </td>
@@ -42,12 +44,12 @@
               <tr *ngIf="(currentUser.role == role.admin || !calendarData.isInEditMode || (currentUser.role == role.user && currentUser.id == user.id && calendarData.isInEditMode))">
                 <td class="text-center">
                     <div>{{user.firstName}}</div>  
-                    <div>{{user.lastName}}</div>
+                    <div>{{user.lastName}} <span [class.dot]="user.isCurrentlyOnVacation" data-toggle="tooltip" data-placement="top" title="Currently on vacation"></span></div>
                     <div *ngIf="(currentUser.role == role.admin || (currentUser.role == role.user && currentUser.id == user.id))">
-                      <button  class="btn btn-primary btn-primary btn-sm" (click)="insertVacation(user)" data-toggle="tooltip" data-placement="top" title="Insert/Edit" *ngIf="calendarData.isInEditMode"><i class="fa fa-plus-square fa-xs"></i></button>
+                      <button  class="btn btn-primary btn-primary btn-sm" (click)="insertVacation(user)" data-toggle="tooltip" data-placement="top" title="Insert/Edit" *ngIf="calendarData.isInEditMode"><i *ngIf="!user.isDetailShown" class="fa fa-plus-square fa-xs"></i><i *ngIf="user.isDetailShown" class="fa fa-minus-square fa-xs"></i></button>
                     </div>
                 </td>
-                <td *ngFor="let vacation of user.vacationData" class="text-center vacation-type-name" [class.non-working]="vacation.isNonWorkingDay" [class.on-vacation]="vacation.isOnVacation" >
+                <td *ngFor="let vacation of user.vacationData" class="text-center vacation-type-name" [class.non-working]="vacation.isNonWorkingDay" [class.on-vacation]="vacation.isOnVacation && vacation.vacationTypeID == 1" [class.on-vacation-sick]="vacation.isOnVacation && vacation.vacationTypeID == 2" [class.on-vacation-holiday]="vacation.isOnVacation && vacation.vacationTypeID == 3">
                   {{getVacationTypeName(vacation.vacationTypeID)}}
                   <div *ngIf="(currentUser.role == role.admin || (currentUser.role == role.user && currentUser.id == user.id))">
                     <button  class="btn btn-primary btn-primary btn-sm delete-button" (click)="deleteVacation(vacation, i)" data-toggle="tooltip" data-placement="top" title="Delete" *ngIf="calendarData.isInEditMode && vacation.id > 0"><i class="fa fa-trash fa-xs"></i></button>

@@ -9,11 +9,10 @@ namespace VacationCalendar.Api.Validators
 {
     public class VacationDataValidator
     {
-        public ResponseViewModel<List<VacationDataViewModel>> IsValidForDelete(VacationDataViewModel model, LoginViewModel loggedUser)
+        public ResponseViewModel<List<VacationDataViewModel>> IsValidForDelete(List<VacationDataViewModel> models, LoginViewModel loggedUser)
         {
             var response = new ResponseViewModel<List<VacationDataViewModel>>();
-
-            if (model.Id == default(int))
+            if (!models.Any())
             {
                 response.Success = false;
                 response.ResponseMessages.Add(ApplicationConstants.ERROR);
@@ -21,19 +20,37 @@ namespace VacationCalendar.Api.Validators
             }
 
             response.Success = true;
-
-            if ((model.UserID != loggedUser.Id && loggedUser.Role == Role.User) || loggedUser.Role == Role.Anonymous)
+            Dictionary<int, string> messages = new Dictionary<int, string>();
+            foreach (var model in models)
             {
-                response.ResponseMessages.Add("Not allowed to maniplate data for requested user!");
-                response.Success = false;
-                return response;
+                if (model.Id == default(int))
+                {
+                    response.Success = false;
+                    response.ResponseMessages.Add(ApplicationConstants.ERROR);
+                    return response;
+                }
+
+                response.Success = true;
+
+                if ((model.UserID != loggedUser.Id && loggedUser.Role == Role.User) || loggedUser.Role == Role.Anonymous)
+                {
+                    if (!messages.ContainsKey(1))
+                        messages.Add(1, "Not allowed to maniplate data for requested user!");
+         
+                    response.Success = false;
+                }
+
+                if (model.Id == default(int))
+                {
+                    if (!messages.ContainsKey(2))
+                        messages.Add(2, "Vacation id is null!");
+
+                    response.Success = false;
+                }
             }
 
-            if (model.Id == default(int))
-            {
-                response.ResponseMessages.Add("Vacation id is null!");
-                response.Success = false;
-            }
+            if (!response.Success)
+                response.ResponseMessages = messages.Values.ToList();
 
             return response;
         }
