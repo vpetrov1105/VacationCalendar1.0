@@ -11,3 +11,7 @@ Application for maintaining employees vacation days
 ADMIN: vedran vedran
 USER: ivan ivan
 ANONYMOUS: jan jan
+
+## Instalation
+-For angular part use "npm install"
+-For .net part just wait to get dependencies and restore test DB to LocalDB server
